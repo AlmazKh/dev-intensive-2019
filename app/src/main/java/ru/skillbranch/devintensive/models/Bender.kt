@@ -20,7 +20,7 @@ class Bender(
             "Отлично - это правильный ответ\n${question.question}" to status.color
         } else {
             status = status.nextStatus()
-            "Это неверный ответ\n${question.question}" to status.color
+            "Это неправильный ответ\n${question.question}" to status.color
         }
     }
 
