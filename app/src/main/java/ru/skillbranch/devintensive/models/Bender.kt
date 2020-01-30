@@ -4,6 +4,8 @@ class Bender(
         var status: Status = Status.NORMAL,
         var question: Question = Question.NAME
 ) {
+    private var attempts: Int = 0
+
     fun askQuestion(): String =
             when (question) {
                 Question.NAME -> Question.NAME.question
@@ -19,8 +21,15 @@ class Bender(
             question = question.nextQuestion()
             "Отлично - это правильный ответ\n${question.question}" to status.color
         } else {
-            status = status.nextStatus()
-            "Это неправильный ответ\n${question.question}" to status.color
+            if(attempts >= 3) {
+                status = Status.NORMAL
+                question = Question.NAME
+                attempts = 0
+                "Это неправильный ответ. Давай все по новой\n${question.question}" to status.color
+            } else {
+                status = status.nextStatus()
+                "Это неправильный ответ\n${question.question}" to status.color
+            }
         }
     }
 
