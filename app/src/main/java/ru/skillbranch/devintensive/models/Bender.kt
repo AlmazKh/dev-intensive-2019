@@ -17,16 +17,54 @@ class Bender(
             }
 
     fun listenAnswer(answer: String): Pair<String, Triple<Int, Int, Int>> {
+        return when (question) {
+            Question.NAME -> if (answer[0].isUpperCase()) {
+                checkAnswer(answer)
+            } else "Имя должно начинаться с заглавной буквы\n${question.question}" to status.color
+            Question.PROFESSION -> if (answer[0].isLowerCase()) {
+                checkAnswer(answer)
+            } else "Профессия должна начинаться со строчной буквы\n${question.question}" to status.color
+            Question.MATERIAL -> if (!containsDigit(answer)) {
+                checkAnswer(answer)
+            } else "Материал не должен содержать цифр\n${question.question}" to status.color
+            Question.BDAY -> if (!containsLetter(answer)) {
+                checkAnswer(answer)
+            } else "Год моего рождения должен содержать только цифры\n${question.question}" to status.color
+            Question.SERIAL -> if (!containsLetter(answer) && answer.length == 7) {
+                checkAnswer(answer)
+            } else "Серийный номер содержит только цифры, и их 7\n${question.question}" to status.color
+            else -> checkAnswer(answer)
+        }
+    }
+
+    private fun containsDigit(answer: String): Boolean {
+        for (char in answer) {
+            if (char.isDigit())
+                return true
+        }
+        return false
+    }
+
+    private fun containsLetter(answer: String): Boolean {
+        for (char in answer) {
+            if (char.isLetter())
+                return true
+        }
+        return false
+    }
+
+    private fun checkAnswer(answer: String): Pair<String, Triple<Int, Int, Int>> {
         return if (question.answers.contains(answer)) {
             question = question.nextQuestion()
             "Отлично - это правильный ответ\n${question.question}" to status.color
         } else {
-            if(attempts >= 3) {
+            if (attempts >= 3) {
                 status = Status.NORMAL
                 question = Question.NAME
                 attempts = 0
                 "Это неправильный ответ. Давай все по новой\n${question.question}" to status.color
             } else {
+                attempts++
                 status = status.nextStatus()
                 "Это неправильный ответ\n${question.question}" to status.color
             }
@@ -49,7 +87,7 @@ class Bender(
     }
 
     enum class Question(val question: String, val answers: List<String>) {
-        NAME("Как меня зовут?", listOf("Бендер", "bender")) {
+        NAME("Как меня зовут?", listOf("Бендер", "Bender")) {
             override fun nextQuestion(): Question = PROFESSION
         },
         PROFESSION("Назови мою профессию?", listOf("сгибальщик", "bender")) {
